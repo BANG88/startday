@@ -23,7 +23,7 @@ class StartDay extends React.Component{
 				tintColor={common.tintColor}
 				titleTextColor={common.tintColor}
 				barTintColor={common.barTintColor}
-				style={styles.view} initialRoute={{ title: 'StartDay',component:Girl}} />
+				style={styles.view} initialRoute={{ title: ' 干货集中营',component:Girl}} />
 }
 }
 
