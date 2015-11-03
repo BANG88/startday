@@ -14,41 +14,42 @@ let {
 	TouchableHighlight,
 } = React;
 let {styles} = style;
-class Story extends React.Component{
-	constructor(props){
+class Story extends React.Component {
+	constructor(props) {
 		super(props);
 		this.state = {
-			modalVisible:false,
-			dataSource:new ListView.DataSource({
-				rowHasChanged:(r1,r2)=>{
+			modalVisible: false,
+			dataSource: new ListView.DataSource({
+				rowHasChanged: (r1, r2)=> {
 					return r1 !== r2
 				},
-				loaded:false
+				loaded: false
 			})
 		}
 	}
-	componentDidMount(){
+
+	componentDidMount() {
 
 		let {year,month,day,url} = this.props;
 
 		url = this.props.story.url;
 
 		this.setState({
-			girl:url
+			girl: url
 		})
 
 
-		API.findByDate(year,month,day).then((res)=>{
+		API.findByDate(year, month, day).then((res)=> {
 			this.setState({
-				dataSource:this.state.dataSource.cloneWithRows([res.results]),
-				stories:res.results,
-				loaded:true,
+				dataSource: this.state.dataSource.cloneWithRows([res.results]),
+				stories: res.results,
+				loaded: true,
 			})
 		}).done();
 	}
 
-	render(){
-		if(!this.state.loaded){
+	render() {
+		if (!this.state.loaded) {
 			return <View>
 			<Text>loading</Text>
 			</View>
@@ -60,22 +61,32 @@ class Story extends React.Component{
 		showsVerticalScrollIndicator={false}
 		automaticallyAdjustContentInsets={false}
 		backgroundSource={{uri:this.state.girl}}
-		windowHeight={300} >
+		windowHeight={300}>
 		<View>
 		{this.renderStory()}
 		</View>
 		</ParallaxView>
 	}
 
-	renderStory(){
+	renderStory() {
 		let stories = this.state.stories;
-		return		Object.keys(stories).map((s)=>{
+
+		let keys = Object.keys(stories);
+
+		if(!keys.length){
+			return <View>
+			<Text> 看来表哥今天不在家-. - </Text>
+			</View>
+		}
+
+		return keys.map((s)=> {
 			return <View key={s} style={styles.storyView}>
 			<Text style={styles.header}>{s}</Text>
 			{
-				stories[s].map((story)=>{
-					return <View  key={story.objectId} style={styles.item} >
-					<TouchableHighlight activeOpacity={.8} underlayColor='#fff' onPress={this._openUrl.bind(this,story)}>
+				stories[s].map((story)=> {
+					return <View key={story.objectId} style={styles.item}>
+					<TouchableHighlight activeOpacity={.8} underlayColor='#fff'
+					onPress={this._openUrl.bind(this,story)}>
 					<Text style={styles.link}>{story.desc}</Text>
 					</TouchableHighlight>
 					</View>
@@ -85,9 +96,9 @@ class Story extends React.Component{
 		})
 	}
 
-	_openUrl(story){
- /*   this.setState({*/
-			//modalVisible:false
+	_openUrl(story) {
+		/*   this.setState({*/
+		//modalVisible:false
 		//})
 
 		//<Modal transparent={false} animated={true} visible={true}>
@@ -96,15 +107,14 @@ class Story extends React.Component{
 
 		//</View>
 
- //</Modal>
- this.props.navigator.push({
-		title:story.desc,
-		component:React.createClass({
-			render:function() {
-				return <Browser {...story} ></Browser>
-			}
+		//</Modal>
+		this.props.navigator.push({
+			title: story.desc,
+			passProps:{
+				story:story
+			},
+			component:       Browser
 		})
- })
 	}
 
 

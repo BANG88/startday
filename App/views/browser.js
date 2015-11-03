@@ -29,7 +29,7 @@ var WebViewExample = React.createClass({
 		};
 	},
 	componentDidMount:function(){
-		let {url} = this.props;
+		let {url} = this.props.story;
 		this.setState({
 			url:url
 		})

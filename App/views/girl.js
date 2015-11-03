@@ -62,16 +62,13 @@ class Girl extends React.Component{
 
 		this.props.navigator.push({
 			title:month+'-'+day,
-			component: React.createClass({
-				render:function(){
-					return <Story
-					year={year}
-					month={month}
-					day={day}
-					story={story}
-					{...this.props} />
-				}
-			})
+			component:Story,
+			passProps: {
+				year:year,
+				month:month,
+				day:day,
+				story:story
+			},
 
 		})
 
