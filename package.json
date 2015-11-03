@@ -6,6 +6,9 @@
     "start": "node_modules/react-native/packager/packager.sh"
   },
   "dependencies": {
-    "react-native": "^0.13.2"
+    "react-native": "^0.13.2",
+    "react-native-blur": "^0.7.5",
+    "react-native-overlay": "^0.3.0",
+    "react-native-parallax-view": "^2.0.2"
   }
 }
