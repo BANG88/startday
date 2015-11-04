@@ -22,7 +22,7 @@ class Girl extends React.Component{
 			dataSource: ds.cloneWithRows(girls),
 			canLoadMoreContent:true,
 			isLoadingContent:false,
-			pageIndex:1,
+			pageIndex:0,
 			pageSize:20
 
 		}
@@ -33,29 +33,32 @@ class Girl extends React.Component{
 	}
 
 	loadMore(){
+		var pageIndex = this.state.pageIndex;
+
 		if(this.state.isLoadingContent){
 			return
 		}
 
 		this.setState({
 			isLoadingContent:true,
+			pageIndex: pageIndex + 1
 		});
 
-		API.findByType(API.dataTypes.GIRL,this.state.pageIndex,this.state.pageSize).then((res)=>{
+		API.findByType(API.dataTypes.GIRL,this.state.pageIndex,this.state.pageSize)
+		.catch((error)=>{
+			this.setState({
+				isLoadingContent:false
+			})
+		})
+		.then((res)=>{
 
 			let data = res.results;
 
 			if(data.length){
-
-				for (let g in data){
-					girls.push(data[g])
-				}
-
-				this.setState({
-					dataSource:this.state.dataSource.cloneWithRows(girls),
-					isLoadingContent:false,
-					canLoadMoreContent: !!res.results.length,
-					pageIndex: this.state.pageIndex + 1
+							this.setState({
+								dataSource:this.getDataSource(data),
+								isLoadingContent:false,
+								canLoadMoreContent: !!res.results.length,
 				})
 
 			}else{
@@ -65,6 +68,11 @@ class Girl extends React.Component{
 		}).done();
 
 
+	}
+
+	getDataSource(girl):ListView.DataSource{
+		girls = girls.concat(girl);
+		return this.state.dataSource.cloneWithRows(girls)
 	}
 	render(){
 		if(this.state.isLoadingContent){
@@ -76,6 +84,8 @@ class Girl extends React.Component{
 		return (<ListView
 						initialListSize={30}
 						ref="listview"
+						pageSize={4}
+						scrollRenderAheadDistance={2000}
 						onEndReached={this.loadMore.bind(this)}
 						showsVerticalScrollIndicator={false}
 						contentContainerStyle={styles.grid}
