@@ -4,7 +4,7 @@ let {width,scale,height} = Dimensions.get('window');
 
 let common={
 	tintColor:'#fff',
-	barTintColor:'#4527a0',
+	barTintColor:'#000',
 	bg:'#f5f5f5'
 }
 

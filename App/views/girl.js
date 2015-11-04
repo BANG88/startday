@@ -7,29 +7,67 @@ let {ListView,View,Text,Image,
 	TouchableHighlight,
 } = React;
 let {styles} = style;
+let ds  = new ListView.DataSource({
+	rowHasChanged:(r1,r2)=>{
+		return r1 !== r2
+	}
+})
+
+let girls = [];
+
 class Girl extends React.Component{
 	constructor(props){
 		super(props);
 		this.state = {
-			dataSource:new ListView.DataSource({
-				rowHasChanged:(r1,r2)=>{
-					return r1 !== r2
-				},
-				loaded:false
-			})
+			dataSource: ds.cloneWithRows(girls),
+			canLoadMoreContent:true,
+			isLoadingContent:false,
+			pageIndex:1,
+			pageSize:20
+
 		}
 	}
 	componentDidMount(){
-		API.findByType(API.dataTypes.GIRL).then((res)=>{
-			this.setState({
-				dataSource:this.state.dataSource.cloneWithRows(res.results),
-				loaded:true
-			})
-		}).done();
+		this.loadMore();
+
 	}
 
+	loadMore(){
+		if(this.state.isLoadingContent){
+			return
+		}
+
+		this.setState({
+			isLoadingContent:true,
+		});
+
+		API.findByType(API.dataTypes.GIRL,this.state.pageIndex,this.state.pageSize).then((res)=>{
+
+			let data = res.results;
+
+			if(data.length){
+
+				for (let g in data){
+					girls.push(data[g])
+				}
+
+				this.setState({
+					dataSource:this.state.dataSource.cloneWithRows(girls),
+					isLoadingContent:false,
+					canLoadMoreContent: !!res.results.length,
+					pageIndex: this.state.pageIndex + 1
+				})
+
+			}else{
+
+			}
+
+		}).done();
+
+
+	}
 	render(){
-		if(!this.state.loaded){
+		if(this.state.isLoadingContent){
 			return <View>
 			<Text>loading</Text>
 			</View>
@@ -37,6 +75,9 @@ class Girl extends React.Component{
 
 		return (<ListView
 						initialListSize={30}
+						ref="listview"
+						onEndReached={this.loadMore.bind(this)}
+						showsVerticalScrollIndicator={false}
 						contentContainerStyle={styles.grid}
 						dataSource={this.state.dataSource}
 						renderRow={this.renderStory.bind(this)}
